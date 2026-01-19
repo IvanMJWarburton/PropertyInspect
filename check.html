@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Inspection – Check</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+
+  <h2>Property Inspection</h2>
+
+  <label>Property Address
+    <input id="address" placeholder="e.g. Flat 2, 10 Example Street">
+  </label>
+
+  <label>Occupant / Tenant Name (optional)
+    <input id="tenant">
+  </label>
+
+  <label>Landlord / Agent (optional)
+    <input id="landlord">
+  </label>
+
+  <div class="section">
+    <h3>Rooms</h3>
+
+    <div class="room-controls">
+      <label>Add Room
+        <select id="roomTypeSelect">
+          <option value="kitchen">Kitchen</option>
+          <option value="bathroom">Bathroom</option>
+          <option value="bedroom">Bedroom</option>
+          <option value="living">Living Room</option>
+          <option value="hallway">Hallway</option>
+          <option value="custom">Custom Room</option>
+        </select>
+      </label>
+      <button id="addRoomBtn" type="button">Add Room</button>
+    </div>
+
+    <div id="rooms"></div>
+  </div>
+
+  <div class="section">
+    <h3>General Notes (optional)</h3>
+    <textarea id="generalNotes" rows="3" placeholder="Any overall comments about the property"></textarea>
+  </div>
+
+  <button id="createReportBtn" type="button">Create Report</button>
+
+  <small>Visual inspection only. Not a safety or compliance guarantee.</small>
+</div>
+
+<script src="checkScript.js"></script>
+</body>
+</html>
