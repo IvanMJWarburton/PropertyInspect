@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Inspection Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+
+  <h2>Property Inspection Tool</h2>
+
+  <p>Select an option below to begin.</p>
+
+  <button onclick="window.location.href='check.html'">
+    Start New Inspection
+  </button>
+
+  <div class="section" style="margin-top: 30px;">
+    <h3>Open Existing Report</h3>
+    <p>Paste a report link below to view it.</p>
+
+    <input id="reportUrl" placeholder="Paste report URL here">
+    <button id="openReportBtn">Open Report</button>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById("openReportBtn").addEventListener("click", () => {
+    const url = document.getElementById("reportUrl").value.trim();
+    if (!url) {
+      alert("Please paste a report URL first.");
+      return;
+    }
+    window.location.href = url;
+  });
+</script>
+
+</body>
+</html>
