@@ -1,4 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+import { getPhoto } from "./photoStore.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
   const reportContainer = document.getElementById("report");
   const raw = new URLSearchParams(window.location.search).get("d");
 
@@ -15,71 +17,67 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const checkTime = d.ts ? new Date(d.ts).toLocaleString() : "Not recorded";
+  const checkTime = new Date(d.ts).toLocaleString();
 
-  function badge(text, cls) {
-    return `<span class="badge ${cls}">${text}</span>`;
-  }
+  let html = `
+    <p><strong>Date & Time:</strong> ${checkTime}</p>
+    <p><strong>Address:</strong> ${d.address || "Not provided"}</p>
+  `;
 
-  const rooms = Array.isArray(d.rooms) ? d.rooms : [];
+  if (d.tenant) html += `<p><strong>Tenant:</strong> ${d.tenant}</p>`;
+  if (d.landlord) html += `<p><strong>Landlord/Agent:</strong> ${d.landlord}</p>`;
 
-  const damagedRooms = rooms
-    .map(room => {
-      const items = (room.items || []).filter(i => i.status === "Damaged");
-      return { name: room.name || "Room", items };
-    })
+  const damagedRooms = d.rooms
+    .map(room => ({
+      name: room.name,
+      items: room.items.filter(i => i.status === "Damaged")
+    }))
     .filter(room => room.items.length > 0);
 
-  let overallStatus = "";
-  let overallDesc = "";
-
   if (damagedRooms.length === 0) {
-    overallStatus = `<div class="overall-status badge good">All Good</div>`;
-    overallDesc = `<div class="overall-desc">No issues were reported during this inspection.</div>`;
-  } else {
-    overallStatus = `<div class="overall-status badge warn">Issues Found</div>`;
-    overallDesc = `<div class="overall-desc">Some damage was reported. Details are listed by room below.</div>`;
-  }
-
-  let html = "";
-
-  html += `<p><strong>Date & Time of Inspection:</strong> ${checkTime}</p>`;
-
-  if (d.address) {
-    html += `<p><strong>Property Address:</strong> ${d.address}</p>`;
-  }
-
-  if (d.tenant) {
-    html += `<p><strong>Occupant / Tenant:</strong> ${d.tenant}</p>`;
-  }
-
-  if (d.landlord) {
-    html += `<p><strong>Landlord / Agent:</strong> ${d.landlord}</p>`;
-  }
-
-  html += overallStatus + overallDesc;
-
-  if (damagedRooms.length === 0) {
-    if (d.notes) {
-      html += `<h3>General Notes</h3><p>${String(d.notes).replace(/\n/g, "<br>")}</p>`;
-    }
+    html += `<h3>All Good</h3><p>No issues reported.</p>`;
     reportContainer.innerHTML = html;
     return;
   }
 
   damagedRooms.forEach(room => {
     html += `<h3>${room.name}</h3><ul>`;
+
     room.items.forEach(item => {
-      const label = item.label || "Item";
-      const notes = item.notes ? String(item.notes).replace(/\n/g, "<br>") : "Damage reported";
-      html += `<li><strong>${label}:</strong> ${notes}</li>`;
+      html += `<li><strong>${item.label}:</strong> ${item.notes || "Damage reported"}`;
+
+      if (item.photoIds?.length) {
+        html += `<div class="report-photo-list">`;
+
+        item.photoIds.forEach(id => {
+          html += `<img id="photo-${id}" class="report-photo">`;
+        });
+
+        html += `</div>`;
+      }
+
+      html += `</li>`;
     });
+
     html += `</ul>`;
   });
 
   if (d.notes) {
-    html += `<h3>General Notes</h3><p>${String(d.notes).replace(/\n/g, "<br>")}</p>`;
+    html += `<h3>General Notes</h3><p>${d.notes.replace(/\n/g, "<br>")}</p>`;
   }
 
   reportContainer.innerHTML = html;
+
+  // Load photos asynchronously
+  for (const room of damagedRooms) {
+    for (const item of room.items) {
+      for (const id of item.photoIds) {
+        const blob = await getPhoto(id);
+        if (blob) {
+          const img = document.getElementById(`photo-${id}`);
+          img.src = URL.createObjectURL(blob);
+        }
+      }
+    }
+  }
 });
