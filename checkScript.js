@@ -1,3 +1,5 @@
+import { savePhoto, deletePhoto } from "./photoStore.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const addressInput = document.getElementById("address");
   const tenantInput = document.getElementById("tenant");
@@ -45,28 +47,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const roomId = roomCounter++;
     const roomEl = document.createElement("div");
     roomEl.className = "room";
-    roomEl.dataset.roomId = String(roomId);
 
     const headerEl = document.createElement("div");
     headerEl.className = "room-header";
 
     const nameInput = document.createElement("input");
     nameInput.className = "room-name";
-    nameInput.placeholder = "Room name";
-    nameInput.value = template.label === "Bedroom"
-      ? `Bedroom ${roomId}`
-      : template.label;
+    nameInput.value = template.label === "Bedroom" ? `Bedroom ${roomId}` : template.label;
 
     const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
     removeBtn.className = "room-remove-btn";
     removeBtn.textContent = "Remove";
-    removeBtn.addEventListener("click", () => {
-      roomsContainer.removeChild(roomEl);
-    });
+    removeBtn.onclick = () => roomsContainer.removeChild(roomEl);
 
-    headerEl.appendChild(nameInput);
-    headerEl.appendChild(removeBtn);
+    headerEl.append(nameInput, removeBtn);
 
     const itemsContainer = document.createElement("div");
     itemsContainer.className = "room-items";
@@ -85,15 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const statusSelect = document.createElement("select");
       statusSelect.className = "status";
-      const okOpt = document.createElement("option");
-      okOpt.value = "OK";
-      okOpt.textContent = "OK";
-      const dmgOpt = document.createElement("option");
-      dmgOpt.value = "Damaged";
-      dmgOpt.textContent = "Damaged";
-      statusSelect.appendChild(okOpt);
-      statusSelect.appendChild(dmgOpt);
-      statusSelect.value = "OK";
+      statusSelect.innerHTML = `
+        <option value="OK">OK</option>
+        <option value="Damaged">Damaged</option>
+      `;
 
       const notesInput = document.createElement("textarea");
       notesInput.className = "notes";
@@ -101,62 +90,135 @@ document.addEventListener("DOMContentLoaded", () => {
       notesInput.placeholder = "Describe the damage";
       notesInput.style.display = "none";
 
-      statusSelect.addEventListener("change", () => {
-        if (statusSelect.value === "Damaged") {
-          notesInput.style.display = "block";
-        } else {
-          notesInput.style.display = "none";
-          notesInput.value = "";
+      // COLLAPSIBLE PHOTO SECTION
+      const photoSection = document.createElement("div");
+      photoSection.className = "photo-section";
+      photoSection.style.display = "none";
+
+      const toggleBtn = document.createElement("button");
+      toggleBtn.className = "photo-toggle-btn";
+      toggleBtn.textContent = "Photos ▼";
+
+      const photoContent = document.createElement("div");
+      photoContent.className = "photo-content";
+      photoContent.style.display = "none";
+
+      const addPhotoBtn = document.createElement("button");
+      addPhotoBtn.className = "add-photo-btn";
+      addPhotoBtn.textContent = "Add Photo";
+
+      const photoList = document.createElement("div");
+      photoList.className = "photo-list";
+
+      let photoIds = [];
+
+      toggleBtn.onclick = () => {
+        const open = photoContent.style.display === "block";
+        photoContent.style.display = open ? "none" : "block";
+        toggleBtn.textContent = open ? "Photos ▶" : "Photos ▼";
+      };
+
+      addPhotoBtn.onclick = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.capture = "environment";
+
+        input.onchange = async () => {
+          const file = input.files[0];
+          if (!file) return;
+
+          const id = "photo_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+          await savePhoto(id, file);
+
+          photoIds.push(id);
+          renderPhotos();
+        };
+
+        input.click();
+      };
+
+      function renderPhotos() {
+        photoList.innerHTML = "";
+
+        photoIds.forEach(id => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "photo-wrapper";
+
+          const img = document.createElement("img");
+          img.className = "photo-preview";
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "delete-photo-btn";
+          delBtn.textContent = "Delete Photo";
+
+          delBtn.onclick = async () => {
+            await deletePhoto(id);
+            photoIds = photoIds.filter(x => x !== id);
+            renderPhotos();
+          };
+
+          // Load photo from IndexedDB
+          getPhoto(id).then(blob => {
+            if (blob) {
+              img.src = URL.createObjectURL(blob);
+            }
+          });
+
+          wrapper.append(img, delBtn);
+          photoList.appendChild(wrapper);
+        });
+      }
+
+      photoContent.append(addPhotoBtn, photoList);
+      photoSection.append(toggleBtn, photoContent);
+
+      statusSelect.onchange = () => {
+        const damaged = statusSelect.value === "Damaged";
+        notesInput.style.display = damaged ? "block" : "none";
+        photoSection.style.display = damaged ? "block" : "none";
+
+        if (!damaged) {
+          photoIds.forEach(id => deletePhoto(id));
+          photoIds = [];
+          photoList.innerHTML = "";
+          photoContent.style.display = "none";
+          toggleBtn.textContent = "Photos ▼";
         }
-      });
+      };
 
-      controls.appendChild(statusSelect);
-      controls.appendChild(notesInput);
+      controls.append(statusSelect, notesInput, photoSection);
+      itemEl.append(itemLabel, controls);
 
-      itemEl.appendChild(itemLabel);
-      itemEl.appendChild(controls);
+      // Attach getter for report
+      itemEl.getPhotoIds = () => photoIds;
+
       itemsContainer.appendChild(itemEl);
     });
 
-    roomEl.appendChild(headerEl);
-    roomEl.appendChild(itemsContainer);
-
+    roomEl.append(headerEl, itemsContainer);
     return roomEl;
   }
 
-  addRoomBtn.addEventListener("click", () => {
-    const typeKey = roomTypeSelect.value;
-    const roomEl = createRoomElement(typeKey);
-    if (roomEl) {
-      roomsContainer.appendChild(roomEl);
-      roomEl.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
+  addRoomBtn.onclick = () => {
+    const roomEl = createRoomElement(roomTypeSelect.value);
+    roomsContainer.appendChild(roomEl);
+  };
 
   function collectRooms() {
-    const roomEls = roomsContainer.querySelectorAll(".room");
-    const rooms = [];
-
-    roomEls.forEach(roomEl => {
-      const name = roomEl.querySelector(".room-name")?.value.trim() || "Room";
-      const items = [];
-
-      roomEl.querySelectorAll(".item").forEach(itemEl => {
-        const label = itemEl.dataset.label || "";
-        const status = itemEl.querySelector(".status")?.value || "OK";
-        const notes = itemEl.querySelector(".notes")?.value.trim() || "";
-
-        items.push({ label, status, notes });
-      });
-
-      rooms.push({ name, items });
-    });
-
-    return rooms;
+    return [...roomsContainer.querySelectorAll(".room")].map(roomEl => ({
+      name: roomEl.querySelector(".room-name").value.trim(),
+      items: [...roomEl.querySelectorAll(".item")].map(itemEl => ({
+        label: itemEl.dataset.label,
+        status: itemEl.querySelector(".status").value,
+        notes: itemEl.querySelector(".notes").value.trim(),
+        photoIds: itemEl.getPhotoIds()
+      }))
+    }));
   }
 
-  function buildDataPayload() {
-    return {
+  createReportBtn.onclick = () => {
+    const data = {
       ts: new Date().toISOString(),
       address: addressInput.value.trim(),
       tenant: tenantInput.value.trim(),
@@ -164,18 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
       notes: generalNotesInput.value.trim(),
       rooms: collectRooms()
     };
-  }
-
-  createReportBtn.addEventListener("click", () => {
-    const data = buildDataPayload();
-
-    if (!data.address) {
-      const proceed = confirm("No property address entered. Continue anyway?");
-      if (!proceed) return;
-    }
 
     const encoded = encodeURIComponent(JSON.stringify(data));
-    const url = `report.html?d=${encoded}`;
-    window.location.href = url;
-  });
+    window.location.href = `report.html?d=${encoded}`;
+  };
 });
