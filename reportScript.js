@@ -1,5 +1,20 @@
 import { getPhoto } from "./photoStore.js";
 
+document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+  const element = document.getElementById("report");
+
+  const opt = {
+    margin:       10,
+    filename:     'inspection-report.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save();
+});
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const reportContainer = document.getElementById("report");
   const raw = new URLSearchParams(window.location.search).get("d");
