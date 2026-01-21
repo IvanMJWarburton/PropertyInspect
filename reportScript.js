@@ -1,16 +1,41 @@
 import { getPhoto } from "./photoStore.js";
 
+// Wait for all images inside a container to finish loading
+function waitForImagesToLoad(container) {
+  const images = container.querySelectorAll("img");
+  const promises = [];
+
+  images.forEach(img => {
+    if (img.complete && img.naturalHeight !== 0) {
+      return; // already loaded
+    }
+
+    promises.push(
+      new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      })
+    );
+  });
+
+  return Promise.all(promises);
+}
+
+// PDF button handler
 document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
   const element = document.getElementById("report");
 
-  // Wait for all photos to load
+  // Ensure all images are loaded
   await waitForImagesToLoad(element);
+
+  // Give browser time to paint base64 images
+  await new Promise(r => setTimeout(r, 150));
 
   const opt = {
     margin: 10,
     filename: "inspection-report.pdf",
     image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2 },
+    html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
 
@@ -18,6 +43,7 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async () => 
 });
 
 
+// MAIN REPORT RENDERING
 document.addEventListener("DOMContentLoaded", async () => {
   const reportContainer = document.getElementById("report");
   const raw = new URLSearchParams(window.location.search).get("d");
@@ -86,37 +112,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   reportContainer.innerHTML = html;
 
-  // Load photos asynchronously
+  // Load photos from IndexedDB as BASE64
   for (const room of damagedRooms) {
     for (const item of room.items) {
       for (const id of item.photoIds) {
         const blob = await getPhoto(id);
-        if (blob) {
-          const img = document.getElementById(`photo-${id}`);
-          img.src = URL.createObjectURL(blob);
-        }
+        if (!blob) continue;
+
+        const img = document.getElementById(`photo-${id}`);
+        if (!img) continue;
+
+        // Convert blob → base64 (html2pdf requires this)
+        const reader = new FileReader();
+        reader.onload = () => {
+          img.src = reader.result; // base64 data URL
+        };
+        reader.readAsDataURL(blob);
       }
     }
   }
 });
-
-function waitForImagesToLoad(container) {
-  const images = container.querySelectorAll("img");
-  const promises = [];
-
-  images.forEach(img => {
-    if (img.complete && img.naturalHeight !== 0) {
-      return; // already loaded
-    }
-
-    promises.push(
-      new Promise(resolve => {
-        img.onload = resolve;
-        img.onerror = resolve; // still resolve so PDF isn't blocked
-      })
-    );
-  });
-
-  return Promise.all(promises);
-}
-
