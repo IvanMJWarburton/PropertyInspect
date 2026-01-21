@@ -6,14 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const landlordInput = document.getElementById("landlord");
   const generalNotesInput = document.getElementById("generalNotes");
 
-  const furnishedToggle = document.getElementById("furnishedToggle");
+  const furnishedToggleEl = document.getElementById("furnishedToggle");
   const roomTypeSelect = document.getElementById("roomTypeSelect");
   const addRoomBtn = document.getElementById("addRoomBtn");
   const roomsContainer = document.getElementById("rooms");
   const createReportBtn = document.getElementById("createReportBtn");
 
   let roomCounter = 1;
-  let furnishedMode = false; // default unfurnished
+  let furnishedMode = false; // default: unfurnished
 
   // STRUCTURAL ITEMS (always shown)
   const STRUCTURAL_TEMPLATES = {
@@ -69,19 +69,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemsContainer = document.createElement("div");
     itemsContainer.className = "room-items";
 
-    // Add structural items
+    // Structural items
     STRUCTURAL_TEMPLATES[typeKey].forEach(label => {
       itemsContainer.appendChild(createItemElement(label));
     });
 
-    // Add furniture items if furnished
+    // Furniture items if furnished
     if (furnishedMode) {
       FURNITURE_TEMPLATES[typeKey].forEach(label => {
         itemsContainer.appendChild(createItemElement(label, true));
       });
     }
 
-    // Add custom item button + inline input
+    // Custom item controls
     const addCustomBtn = document.createElement("button");
     addCustomBtn.className = "add-custom-btn";
     addCustomBtn.textContent = "+ Add Item";
@@ -280,27 +280,36 @@ document.addEventListener("DOMContentLoaded", () => {
     roomsContainer.appendChild(roomEl);
   };
 
-  // Furnished toggle
-  furnishedToggle.onchange = () => {
-    furnishedMode = furnishedToggle.checked;
+  // Furnished segmented toggle behaviour
+  furnishedToggleEl.addEventListener("click", e => {
+    if (e.target.tagName !== "BUTTON") return;
 
+    const value = e.target.dataset.value;
+    furnishedMode = value === "furnished";
+
+    // visual state
+    [...furnishedToggleEl.querySelectorAll("button")].forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.value === value);
+    });
+
+    // update all rooms
     [...roomsContainer.querySelectorAll(".room")].forEach(roomEl => {
       const type = roomEl.dataset.type;
       const itemsContainer = roomEl.querySelector(".room-items");
 
-      // Remove existing furniture items
+      // remove existing furniture items
       [...itemsContainer.querySelectorAll(".item")].forEach(item => {
         if (item.dataset.furniture === "1") item.remove();
       });
 
-      // Add furniture if furnished
+      // add furniture if furnished
       if (furnishedMode) {
         FURNITURE_TEMPLATES[type].forEach(label => {
           itemsContainer.appendChild(createItemElement(label, true));
         });
       }
     });
-  };
+  });
 
   // Collect rooms
   function collectRooms() {
