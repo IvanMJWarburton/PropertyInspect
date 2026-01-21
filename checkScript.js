@@ -1,4 +1,4 @@
-import { savePhoto, deletePhoto } from "./photoStore.js";
+import { savePhoto, deletePhoto, getPhoto } from "./photoStore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const addressInput = document.getElementById("address");
