@@ -383,3 +383,26 @@ small {
   transform: translateX(30px);
 }
 
+/ Custom item input /
+.custom-item-input {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.custom-item-input input {
+  flex: 1;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.custom-item-input button {
+  padding: 6px 12px;
+}
+
+/ Better spacing for Add Item button /
+.add-custom-btn {
+  margin-top: 20px;
+}
+
