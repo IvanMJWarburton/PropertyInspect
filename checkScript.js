@@ -81,31 +81,63 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Add custom item button
+    // Add custom item button + inline input
     const addCustomBtn = document.createElement("button");
     addCustomBtn.className = "add-custom-btn";
-    addCustomBtn.textContent = "+ Add Custom Item";
+    addCustomBtn.textContent = "+ Add Item";
+
+    const customInputWrapper = document.createElement("div");
+    customInputWrapper.className = "custom-item-input";
+    customInputWrapper.style.display = "none";
+
+    const customInput = document.createElement("input");
+    customInput.placeholder = "Item name";
+
+    const customAddBtn = document.createElement("button");
+    customAddBtn.textContent = "Add";
+
+    customInputWrapper.append(customInput, customAddBtn);
 
     addCustomBtn.onclick = () => {
-      const label = prompt("Enter custom item name:");
-      if (!label) return;
-      itemsContainer.appendChild(createItemElement(`Custom: ${label}`));
+      customInputWrapper.style.display = "flex";
+      customInput.focus();
     };
 
-    roomEl.append(headerEl, itemsContainer, addCustomBtn);
+    customAddBtn.onclick = () => {
+      const label = customInput.value.trim();
+      if (!label) return;
+
+      itemsContainer.appendChild(createItemElement(label, false, true));
+
+      customInput.value = "";
+      customInputWrapper.style.display = "none";
+    };
+
+    roomEl.append(headerEl, itemsContainer, addCustomBtn, customInputWrapper);
     return roomEl;
   }
 
   // Create an item element
-  function createItemElement(label, isFurniture = false) {
+  function createItemElement(label, isFurniture = false, isCustom = false) {
     const itemEl = document.createElement("div");
     itemEl.className = "item";
     itemEl.dataset.label = label;
     itemEl.dataset.furniture = isFurniture ? "1" : "0";
+    itemEl.dataset.custom = isCustom ? "1" : "0";
 
     const itemLabel = document.createElement("div");
     itemLabel.className = "item-label";
     itemLabel.textContent = label;
+
+    // Remove button for custom items only
+    if (isCustom) {
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-custom-btn";
+      removeBtn.textContent = "Remove";
+      removeBtn.style.marginLeft = "10px";
+      removeBtn.onclick = () => itemEl.remove();
+      itemLabel.append(removeBtn);
+    }
 
     const controls = document.createElement("div");
     controls.className = "item-controls";
@@ -252,7 +284,6 @@ document.addEventListener("DOMContentLoaded", () => {
   furnishedToggle.onchange = () => {
     furnishedMode = furnishedToggle.checked;
 
-    // Update all rooms
     [...roomsContainer.querySelectorAll(".room")].forEach(roomEl => {
       const type = roomEl.dataset.type;
       const itemsContainer = roomEl.querySelector(".room-items");
