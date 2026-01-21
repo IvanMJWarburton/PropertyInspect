@@ -329,23 +329,23 @@ small {
 
 .furnished-toggle {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 20px;
 }
 
 .switch-label {
   font-weight: bold;
+  margin-bottom: 6px;
 }
 
-.switch {
+.switch-wrapper {
   position: relative;
-  display: inline-block;
   width: 60px;
   height: 30px;
 }
 
-.switch input {
+.switch-wrapper input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -375,19 +375,19 @@ small {
   transition: 0.3s;
 }
 
-.switch input:checked + .slider {
+.switch-wrapper input:checked + .slider {
   background-color: #007bff;
 }
 
-.switch input:checked + .slider:before {
+.switch-wrapper input:checked + .slider:before {
   transform: translateX(30px);
 }
 
-/ Custom item input /
 .custom-item-input {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .custom-item-input input {
@@ -401,7 +401,6 @@ small {
   padding: 6px 12px;
 }
 
-/ Better spacing for Add Item button /
 .add-custom-btn {
   margin-top: 20px;
 }
