@@ -65,255 +65,159 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemsContainer = document.createElement("div");
     itemsContainer.className = "room-items";
 
-    template.items.forEach(label => {
-      const itemEl = document.createElement("div");
-      itemEl.className = "item";
-      itemEl.dataset.label = label;
+   template.items.forEach(label => {
+  const itemEl = document.createElement("div");
+  itemEl.className = "item";
+  itemEl.dataset.label = label;
 
-      const itemLabel = document.createElement("div");
-      itemLabel.className = "item-label";
-      itemLabel.textContent = label;
+  const itemLabel = document.createElement("div");
+  itemLabel.className = "item-label";
+  itemLabel.textContent = label;
 
-      const controls = document.createElement("div");
-      controls.className = "item-controls";
+  const controls = document.createElement("div");
+  controls.className = "item-controls";
 
-      const statusSelect = document.createElement("select");
-      statusSelect.className = "status";
-      statusSelect.innerHTML = `
-        <option value="OK">OK</option>
-        <option value="Damaged">Damaged</option>
-      `;
+  const statusSelect = document.createElement("select");
+  statusSelect.className = "status";
+  statusSelect.innerHTML = `
+    <option value="OK">OK</option>
+    <option value="Damaged">Damaged</option>
+  `;
 
-      const notesInput = document.createElement("textarea");
-      notesInput.className = "notes";
-      notesInput.rows = 2;
-      notesInput.placeholder = "Describe the damage";
-      notesInput.style.display = "none";
+  const notesInput = document.createElement("textarea");
+  notesInput.className = "notes";
+  notesInput.rows = 2;
+  notesInput.placeholder = "Describe the damage";
+  notesInput.style.display = "none";
 
-      // COLLAPSIBLE PHOTO SECTION
-      const photoSection = document.createElement("div");
-      photoSection.className = "photo-section";
-      photoSection.style.display = "none";
+  // COLLAPSIBLE PHOTO SECTION
+  const photoSection = document.createElement("div");
+  photoSection.className = "photo-section";
+  photoSection.style.display = "none";
 
-      const toggleBtn = document.createElement("button");
-      toggleBtn.className = "photo-toggle-btn";
-      toggleBtn.textContent = "Photos ▼";
+  const toggleBtn = document.createElement("button");
+  toggleBtn.className = "photo-toggle-btn";
+  toggleBtn.textContent = "Photos ▼";
 
-      const photoContent = document.createElement("div");
-      photoContent.className = "photo-content";
-      photoContent.style.display = "none";
+  const photoContent = document.createElement("div");
+  photoContent.className = "photo-content";
+  photoContent.style.display = "none";
 
-      // COLLAPSIBLE PHOTO SECTION
-const photoSection = document.createElement("div");
-photoSection.className = "photo-section";
-photoSection.style.display = "none";
+  // TWO BUTTONS
+  const takePhotoBtn = document.createElement("button");
+  takePhotoBtn.className = "add-photo-btn";
+  takePhotoBtn.textContent = "Take Photo (Camera)";
 
-const toggleBtn = document.createElement("button");
-toggleBtn.className = "photo-toggle-btn";
-toggleBtn.textContent = "Photos ▼";
+  const uploadPhotoBtn = document.createElement("button");
+  uploadPhotoBtn.className = "add-photo-btn";
+  uploadPhotoBtn.textContent = "Upload From Files";
 
-const photoContent = document.createElement("div");
-photoContent.className = "photo-content";
-photoContent.style.display = "none";
+  const photoList = document.createElement("div");
+  photoList.className = "photo-list";
 
-// TWO BUTTONS
-const takePhotoBtn = document.createElement("button");
-takePhotoBtn.className = "add-photo-btn";
-takePhotoBtn.textContent = "Take Photo (Camera)";
+  let photoIds = [];
 
-const uploadPhotoBtn = document.createElement("button");
-uploadPhotoBtn.className = "add-photo-btn";
-uploadPhotoBtn.textContent = "Upload From Files";
-
-const photoList = document.createElement("div");
-photoList.className = "photo-list";
-
-let photoIds = [];
-
-// Toggle collapse
-toggleBtn.onclick = () => {
-  const open = photoContent.style.display === "block";
-  photoContent.style.display = open ? "none" : "block";
-  toggleBtn.textContent = open ? "Photos ▶" : "Photos ▼";
-};
-
-// Helper to add a photo from a File object
-async function handlePhotoFile(file) {
-  const id = "photo_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-  await savePhoto(id, file);
-  photoIds.push(id);
-  renderPhotos();
-}
-
-// TAKE PHOTO (camera only)
-takePhotoBtn.onclick = () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.capture = "environment"; // forces camera
-
-  input.onchange = () => {
-    const file = input.files[0];
-    if (file) handlePhotoFile(file);
+  // Toggle collapse
+  toggleBtn.onclick = () => {
+    const open = photoContent.style.display === "block";
+    photoContent.style.display = open ? "none" : "block";
+    toggleBtn.textContent = open ? "Photos ▶" : "Photos ▼";
   };
 
-  input.click();
-};
+  // Helper to add a photo from a File object
+  async function handlePhotoFile(file) {
+    const id = "photo_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    await savePhoto(id, file);
+    photoIds.push(id);
+    renderPhotos();
+  }
 
-// UPLOAD FROM FILES (gallery / file picker)
-uploadPhotoBtn.onclick = () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
+  // TAKE PHOTO (camera only)
+  takePhotoBtn.onclick = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.capture = "environment";
 
-  input.onchange = () => {
-    const file = input.files[0];
-    if (file) handlePhotoFile(file);
-  };
-
-  input.click();
-};
-
-// Render previews
-function renderPhotos() {
-  photoList.innerHTML = "";
-
-  photoIds.forEach(id => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "photo-wrapper";
-
-    const img = document.createElement("img");
-    img.className = "photo-preview";
-
-    const delBtn = document.createElement("button");
-    delBtn.className = "delete-photo-btn";
-    delBtn.textContent = "Delete Photo";
-
-    delBtn.onclick = async () => {
-      await deletePhoto(id);
-      photoIds = photoIds.filter(x => x !== id);
-      renderPhotos();
+    input.onchange = () => {
+      const file = input.files[0];
+      if (file) handlePhotoFile(file);
     };
 
-    getPhoto(id).then(blob => {
-      if (blob) img.src = URL.createObjectURL(blob);
-    });
+    input.click();
+  };
 
-    wrapper.append(img, delBtn);
-    photoList.appendChild(wrapper);
-  });
-}
+  // UPLOAD FROM FILES
+  uploadPhotoBtn.onclick = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
 
-photoContent.append(takePhotoBtn, uploadPhotoBtn, photoList);
-photoSection.append(toggleBtn, photoContent);
+    input.onchange = () => {
+      const file = input.files[0];
+      if (file) handlePhotoFile(file);
+    };
 
-// Show/hide on status change
-statusSelect.onchange = () => {
-  const damaged = statusSelect.value === "Damaged";
-  notesInput.style.display = damaged ? "block" : "none";
-  photoSection.style.display = damaged ? "block" : "none";
+    input.click();
+  };
 
-  if (!damaged) {
-    photoIds.forEach(id => deletePhoto(id));
-    photoIds = [];
+  // Render previews
+  function renderPhotos() {
     photoList.innerHTML = "";
-    photoContent.style.display = "none";
-    toggleBtn.textContent = "Photos ▼";
-  }
-};
 
-// Attach getter for report
-itemEl.getPhotoIds = () => photoIds;
+    photoIds.forEach(id => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "photo-wrapper";
 
+      const img = document.createElement("img");
+      img.className = "photo-preview";
 
-      const photoList = document.createElement("div");
-      photoList.className = "photo-list";
+      const delBtn = document.createElement("button");
+      delBtn.className = "delete-photo-btn";
+      delBtn.textContent = "Delete Photo";
 
-      let photoIds = [];
-
-      toggleBtn.onclick = () => {
-        const open = photoContent.style.display === "block";
-        photoContent.style.display = open ? "none" : "block";
-        toggleBtn.textContent = open ? "Photos ▶" : "Photos ▼";
+      delBtn.onclick = async () => {
+        await deletePhoto(id);
+        photoIds = photoIds.filter(x => x !== id);
+        renderPhotos();
       };
 
-      addPhotoBtn.onclick = () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.capture = "environment";
+      getPhoto(id).then(blob => {
+        if (blob) img.src = URL.createObjectURL(blob);
+      });
 
-        input.onchange = async () => {
-          const file = input.files[0];
-          if (!file) return;
-
-          const id = "photo_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-          await savePhoto(id, file);
-
-          photoIds.push(id);
-          renderPhotos();
-        };
-
-        input.click();
-      };
-
-      function renderPhotos() {
-        photoList.innerHTML = "";
-
-        photoIds.forEach(id => {
-          const wrapper = document.createElement("div");
-          wrapper.className = "photo-wrapper";
-
-          const img = document.createElement("img");
-          img.className = "photo-preview";
-
-          const delBtn = document.createElement("button");
-          delBtn.className = "delete-photo-btn";
-          delBtn.textContent = "Delete Photo";
-
-          delBtn.onclick = async () => {
-            await deletePhoto(id);
-            photoIds = photoIds.filter(x => x !== id);
-            renderPhotos();
-          };
-
-          // Load photo from IndexedDB
-          getPhoto(id).then(blob => {
-            if (blob) {
-              img.src = URL.createObjectURL(blob);
-            }
-          });
-
-          wrapper.append(img, delBtn);
-          photoList.appendChild(wrapper);
-        });
-      }
-
-      photoContent.append(addPhotoBtn, photoList);
-      photoSection.append(toggleBtn, photoContent);
-
-      statusSelect.onchange = () => {
-        const damaged = statusSelect.value === "Damaged";
-        notesInput.style.display = damaged ? "block" : "none";
-        photoSection.style.display = damaged ? "block" : "none";
-
-        if (!damaged) {
-          photoIds.forEach(id => deletePhoto(id));
-          photoIds = [];
-          photoList.innerHTML = "";
-          photoContent.style.display = "none";
-          toggleBtn.textContent = "Photos ▼";
-        }
-      };
-
-      controls.append(statusSelect, notesInput, photoSection);
-      itemEl.append(itemLabel, controls);
-
-      // Attach getter for report
-      itemEl.getPhotoIds = () => photoIds;
-
-      itemsContainer.appendChild(itemEl);
+      wrapper.append(img, delBtn);
+      photoList.appendChild(wrapper);
     });
+  }
+
+  photoContent.append(takePhotoBtn, uploadPhotoBtn, photoList);
+  photoSection.append(toggleBtn, photoContent);
+
+  // Show/hide on status change
+  statusSelect.onchange = () => {
+    const damaged = statusSelect.value === "Damaged";
+    notesInput.style.display = damaged ? "block" : "none";
+    photoSection.style.display = damaged ? "block" : "none";
+
+    if (!damaged) {
+      photoIds.forEach(id => deletePhoto(id));
+      photoIds = [];
+      photoList.innerHTML = "";
+      photoContent.style.display = "none";
+      toggleBtn.textContent = "Photos ▼";
+    }
+  };
+
+  controls.append(statusSelect, notesInput, photoSection);
+  itemEl.append(itemLabel, controls);
+
+  // Attach getter for report
+  itemEl.getPhotoIds = () => photoIds;
+
+  itemsContainer.appendChild(itemEl);
+});
+
 
     roomEl.append(headerEl, itemsContainer);
     return roomEl;
