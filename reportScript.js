@@ -1,14 +1,17 @@
 import { getPhoto } from "./photoStore.js";
 
-document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
   const element = document.getElementById("report");
 
+  // Wait for all photos to load
+  await waitForImagesToLoad(element);
+
   const opt = {
-    margin:       10,
-    filename:     'inspection-report.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    margin: 10,
+    filename: "inspection-report.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
 
   html2pdf().set(opt).from(element).save();
@@ -96,3 +99,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 });
+
+function waitForImagesToLoad(container) {
+  const images = container.querySelectorAll("img");
+  const promises = [];
+
+  images.forEach(img => {
+    if (img.complete && img.naturalHeight !== 0) {
+      return; // already loaded
+    }
+
+    promises.push(
+      new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve; // still resolve so PDF isn't blocked
+      })
+    );
+  });
+
+  return Promise.all(promises);
+}
+
