@@ -478,3 +478,62 @@ small {
   background: #2563eb;
   color: white;
 }
+
+/* Fix for Add Item and Add buttons */
+.add-custom-btn {
+  margin-top: 20px;
+  padding: 10px 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.add-custom-btn:hover {
+  background: #1e4fc7;
+}
+
+.custom-item-input {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.custom-item-input input {
+  flex: 1;
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.custom-item-input button {
+  padding: 10px 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-item-input button:hover {
+  background: #1e4fc7;
+}
+
+.remove-custom-btn {
+  background: #ef4444;
+  color: white;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.remove-custom-btn:hover {
+  background: #dc2626;
+}
