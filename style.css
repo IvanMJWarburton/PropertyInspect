@@ -1,6 +1,7 @@
+/* GLOBAL RESET & BASE */
+
 * {
   box-sizing: border-box;
-  text-align: center;
 }
 
 body {
@@ -63,7 +64,7 @@ button:hover {
   margin-top: 18px;
 }
 
-/* Room controls */
+/* ROOM CONTROLS */
 
 .room-controls {
   display: flex;
@@ -81,7 +82,7 @@ button:hover {
   flex-shrink: 0;
 }
 
-/* Room blocks */
+/* ROOM BLOCKS */
 
 .room {
   border: 1px solid #ddd;
@@ -127,6 +128,10 @@ button:hover {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .item-controls {
@@ -144,7 +149,68 @@ button:hover {
   font-size: 14px;
 }
 
-/* Report badges */
+/* CUSTOM ITEM CONTROLS */
+
+.add-custom-btn {
+  margin-top: 16px;
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: auto;
+}
+
+.add-custom-btn:hover {
+  background: #1e4fc7;
+}
+
+.custom-item-input {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.custom-item-input input {
+  flex: 1;
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.custom-item-input button {
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-item-input button:hover {
+  background: #1e4fc7;
+}
+
+.remove-custom-btn {
+  background: #ef4444;
+  color: white;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.remove-custom-btn:hover {
+  background: #dc2626;
+}
+
+/* REPORT BADGES */
 
 .badge {
   display: inline-block;
@@ -185,7 +251,7 @@ button:hover {
   color: #444;
 }
 
-/* Report lists */
+/* REPORT LISTS */
 
 #report ul {
   list-style: none;
@@ -197,7 +263,7 @@ button:hover {
   margin-bottom: 4px;
 }
 
-/* Small text */
+/* SMALL TEXT */
 
 small {
   display: block;
@@ -207,65 +273,14 @@ small {
   text-align: center;
 }
 
+/* PHOTOS */
+
 .report-photo {
   width: 100%;
   max-width: 420px;
   margin-top: 8px;
   border-radius: 10px;
   border: 1px solid #ccc;
-}
-
-.photo-toggle-btn {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  font-size: 16px;
-  text-align: center;
-}
-
-.photo-content {
-  margin-top: 10px;
-}
-
-.add-photo-btn {
-  width: 100%;
-  padding: 10px;
-  background: #10b981;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.photo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.photo-wrapper {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.photo-preview {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 6px;
-}
-
-.delete-photo-btn {
-  background: #ef4444;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 8px;
-  width: 100%;
 }
 
 .photo-toggle-btn,
@@ -277,6 +292,8 @@ small {
   color: white;
   border: none;
   margin-top: 10px;
+  font-size: 16px;
+  text-align: center;
 }
 
 .add-photo-btn {
@@ -313,6 +330,8 @@ small {
   border-radius: 8px;
   width: 100%;
 }
+
+/* REPORT PHOTOS IN PDF */
 
 .report-photo-list {
   flex-direction: column;
@@ -327,294 +346,7 @@ small {
   margin-top: 6px;
 }
 
-.furnished-toggle {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-
-.switch-label {
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.switch-wrapper {
-  position: relative;
-  width: 60px;
-  height: 30px;
-}
-
-.switch-wrapper input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: #ccc;
-  border-radius: 6px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.3s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 24px;
-  width: 24px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  border-radius: 4px;
-  transition: 0.3s;
-}
-
-.switch-wrapper input:checked + .slider {
-  background-color: #007bff;
-}
-
-.switch-wrapper input:checked + .slider:before {
-  transform: translateX(30px);
-}
-
-.furnished-toggle {
-  margin-bottom: 20px;
-}
-
-.toggle-title {
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-/* Segmented toggle as a single control */
-.segmented-toggle {
-  display: flex;
-  width: 100%;
-  max-width: 260px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #f5f5f5;
-  border: 1px solid #007bff;
-}
-
-/* Each half fills the control */
-.segmented-toggle button {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: #333;
-  padding: 8px 0;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-/* Divider between halves */
-.segmented-toggle button + button {
-  border-left: 1px solid #007bff;
-}
-
-/* Active state looks like a single blue pill half */
-.segmented-toggle button.active {
-  background: #007bff;
-  color: #fff;
-}
-
-/* Center the whole control under the label if you like */
-.furnished-toggle {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* change to center if you want it centered */
-}
-
-/* --- FIXED SEGMENTED TOGGLE --- */
-.furnished-toggle {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.toggle-title {
-  font-weight: bold;
-  margin-bottom: 8px;
-  font-size: 16px;
-}
-
-.segmented-toggle {
-  display: flex;
-  width: 100%;
-  max-width: 260px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #f5f5f5;
-  border: 2px solid #2563eb;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.04);
-}
-
-.segmented-toggle button {
-  all: unset;
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #2563eb;
-  background: transparent;
-  transition: background 0.2s, color 0.2s;
-}
-
-.segmented-toggle button + button {
-  border-left: 1px solid #2563eb;
-}
-
-.segmented-toggle button.active {
-  background: #2563eb;
-  color: white;
-}
-
-/* Fix for Add Item and Add buttons */
-.add-custom-btn {
-  margin-top: 20px;
-  padding: 10px 14px;
-  font-size: 15px;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.add-custom-btn:hover {
-  background: #1e4fc7;
-}
-
-.custom-item-input {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.custom-item-input input {
-  flex: 1;
-  padding: 10px;
-  font-size: 15px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.custom-item-input button {
-  padding: 10px 14px;
-  font-size: 15px;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.custom-item-input button:hover {
-  background: #1e4fc7;
-}
-
-.remove-custom-btn {
-  background: #ef4444;
-  color: white;
-  padding: 6px 10px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.remove-custom-btn:hover {
-  background: #dc2626;
-}
-
-/* === GLOBAL FIXES === */
-
-/* Prevent global text-align from affecting flex layouts */
-.custom-item-input,
-.segmented-toggle,
-.room-controls,
-.room-header {
-  text-align: initial;
-}
-
-/* === CUSTOM ITEM BUTTONS === */
-
-.add-custom-btn {
-  margin-top: 20px;
-  padding: 10px 16px;
-  font-size: 16px;
-  border-radius: 12px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: auto;
-}
-
-.add-custom-btn:hover {
-  background: #1e4fc7;
-}
-
-.custom-item-input {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.custom-item-input input {
-  flex: 1;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.custom-item-input button {
-  padding: 10px 16px;
-  font-size: 16px;
-  border-radius: 12px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: auto;
-}
-
-.custom-item-input button:hover {
-  background: #1e4fc7;
-}
-
-/* === REMOVE BUTTON FOR CUSTOM ITEMS === */
-
-.remove-custom-btn {
-  background: #ef4444;
-  color: white;
-  padding: 6px 12px;
-  font-size: 14px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.remove-custom-btn:hover {
-  background: #dc2626;
-}
-
-/* === SEGMENTED TOGGLE === */
+/* FURNISHED / UNFURNISHED SEGMENTED TOGGLE */
 
 .furnished-toggle {
   margin-bottom: 20px;
