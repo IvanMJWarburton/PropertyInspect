@@ -392,55 +392,42 @@ small {
   margin-bottom: 8px;
 }
 
+/* Segmented toggle as a single control */
 .segmented-toggle {
-  display: inline-flex;
-  border: 1px solid #007bff;
+  display: flex;
+  width: 100%;
+  max-width: 260px;
   border-radius: 6px;
   overflow: hidden;
+  background: #f5f5f5;
+  border: 1px solid #007bff;
 }
 
+/* Each half fills the control */
 .segmented-toggle button {
+  flex: 1;
   border: none;
-  background: #f5f5f5;
+  background: transparent;
   color: #333;
-  padding: 6px 14px;
+  padding: 8px 0;
   font-size: 14px;
   cursor: pointer;
-  min-width: 110px;
 }
 
+/* Divider between halves */
 .segmented-toggle button + button {
   border-left: 1px solid #007bff;
 }
 
+/* Active state looks like a single blue pill half */
 .segmented-toggle button.active {
   background: #007bff;
   color: #fff;
 }
 
-.segmented-toggle button:focus {
-  outline: none;
-}
-
-/* Custom item spacing */
-.add-custom-btn {
-  margin-top: 20px;
-}
-
-.custom-item-input {
-  margin-top: 12px;
+/* Center the whole control under the label if you like */
+.furnished-toggle {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.custom-item-input input {
-  flex: 1;
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.custom-item-input button {
-  padding: 6px 12px;
+  flex-direction: column;
+  align-items: flex-start; /* change to center if you want it centered */
 }
